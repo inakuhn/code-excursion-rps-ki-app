@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+    <string>The camera is needed to detect your hand gestures using TensorFlow for the rock-paper-scissors game.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>The microphone is required to allow voice commands for interacting with the game.</string>
 </dict>
 </plist>
