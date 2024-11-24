@@ -1,8 +1,10 @@
 // A screen that allows users to take a picture using a given camera.
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:python_ki_app/ki/gesture_classification_helper.dart';
 import 'package:python_ki_app/ui/screen/DisplayPictureScreen.dart';
-
 
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
@@ -19,21 +21,41 @@ class TakePictureScreen extends StatefulWidget {
 class TakePictureScreenState extends State<TakePictureScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  late GestureClassificationHelper _gestureClassificationHelper;
+  Map<String, double>? _classification;
+  bool _isProcessing = false;
 
   @override
   void initState() {
     super.initState();
+    _initHelper();
+  }
+
+  void _initHelper() {
+    _initCamera();
+    _gestureClassificationHelper = GestureClassificationHelper();
+    _gestureClassificationHelper.init();
+  }
+
+  void _initCamera() {
     // To display the current output from the Camera,
-    // create a CameraController.
+    // create a CameraController
     _controller = CameraController(
-      // Get a specific camera from the list of available cameras.
-      widget.camera,
-      // Define the resolution to use.
-      ResolutionPreset.medium,
-    );
+        // Get a specific camera from the list of available cameras.
+        widget.camera,
+        // Define the resolution to use.
+        ResolutionPreset.high,
+        imageFormatGroup: Platform.isIOS
+            ? ImageFormatGroup.bgra8888
+            : ImageFormatGroup.yuv420);
 
     // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = _controller.initialize();
+    _initializeControllerFuture = _controller.initialize().then((value) {
+      _controller.startImageStream(_imageAnalysis);
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -41,6 +63,28 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     // Dispose of the controller when the widget is disposed.
     _controller.dispose();
     super.dispose();
+  }
+
+  Widget cameraWidget(context) {
+    var camera = _controller.value;
+    // fetch screen size
+    final size = MediaQuery.of(context).size;
+
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
+
+    return Transform.scale(
+      scale: scale,
+      child: Center(
+        child: CameraPreview(_controller),
+      ),
+    );
   }
 
   @override
@@ -55,7 +99,45 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
+            return Center(
+                // Center is a layout widget. It takes a single child and positions it
+                // in the middle of the parent.
+                child: Stack(
+              children: [
+                SizedBox(
+                  child: cameraWidget(context),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        if (_classification != null)
+                          ...(_classification!.entries.toList()
+                                ..sort(
+                                  (a, b) => a.value.compareTo(b.value),
+                                ))
+                              .reversed
+                              .take(3)
+                              .map(
+                                (e) => Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.white,
+                                  child: Row(
+                                    children: [
+                                      Text(e.key),
+                                      const Spacer(),
+                                      Text(e.value.toStringAsFixed(2))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ));
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
@@ -95,5 +177,19 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         child: const Icon(Icons.camera_alt),
       ),
     );
+  }
+
+  Future<void> _imageAnalysis(CameraImage cameraImage) async {
+    // if image is still analyze, skip this frame
+    if (_isProcessing) {
+      return;
+    }
+    _isProcessing = true;
+    _classification =
+        await _gestureClassificationHelper.inferenceCameraFrame(cameraImage);
+    _isProcessing = false;
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
