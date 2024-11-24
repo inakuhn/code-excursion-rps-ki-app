@@ -121,13 +121,15 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                               .take(3)
                               .map(
                                 (e) => Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.fromLTRB(8,8,8,38),
                                   color: Colors.white,
                                   child: Row(
                                     children: [
                                       Text(e.key),
                                       const Spacer(),
-                                      Text(e.value.toStringAsFixed(2))
+                                      Text(e.value.toStringAsFixed(2)),
+                                      const Spacer(),
+                                      const Spacer(),
                                     ],
                                   ),
                                 ),
