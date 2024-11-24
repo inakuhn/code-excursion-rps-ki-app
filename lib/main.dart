@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:python_ki_app/ui/screen/TakePictureScreen.dart';
+import 'package:python_ki_app/ui/screen/take_picture_screen.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`

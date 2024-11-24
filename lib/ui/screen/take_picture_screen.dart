@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:python_ki_app/ki/gesture_classification_helper.dart';
-import 'package:python_ki_app/ui/screen/DisplayPictureScreen.dart';
+import 'package:python_ki_app/ui/screen/display_picture_screen.dart';
 
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
