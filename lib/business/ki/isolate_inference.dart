@@ -18,7 +18,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as image_lib;
-import 'package:python_ki_app/images/image_utils.dart';
+import 'package:python_ki_app/business/images/image_utils.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class IsolateInference {
