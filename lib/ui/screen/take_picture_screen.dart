@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
+import 'package:python_ki_app/ui/molecule/rsp_top_bar.dart';
 import 'package:python_ki_app/ui/screen/display_picture_screen.dart';
 
 class TakePictureScreen extends StatefulWidget {
@@ -105,7 +106,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Take a picture')),
+      appBar: const RSPTopBar(title: "RPS App"),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
