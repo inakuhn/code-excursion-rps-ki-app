@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:python_ki_app/ui/screen/take_picture_screen.dart';
+import 'package:python_ki_app/theme/theme.dart';
+import 'package:python_ki_app/theme/util.dart';
+import 'package:python_ki_app/ui/screen/rock_paper_scissors_player_camera.dart';
+import 'package:python_ki_app/ui/screen/welcome_screen.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -15,23 +17,42 @@ Future<void> main() async {
   final cameras = await availableCameras();
 
   // Get a specific camera from the list of available cameras.
-  CameraDescription frontCamera =  defaultTargetPlatform == TargetPlatform.macOS || defaultTargetPlatform == TargetPlatform.windows
-      ? cameras.first
-      : cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front,
-  );
+  CameraDescription frontCamera =
+      defaultTargetPlatform == TargetPlatform.macOS ||
+              defaultTargetPlatform == TargetPlatform.windows
+          ? cameras.first
+          : cameras.firstWhere(
+              (camera) => camera.lensDirection == CameraLensDirection.front,
+            );
 
-  runApp(
-    MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFEC0AA)),
-        useMaterial3: true,
-      ),
-      home: TakePictureScreen(
-        // Pass the appropriate camera to the TakePictureScreen widget.
-        camera: frontCamera,
-      ),
-    ),
-  );
+  runApp(MyApp(camera: frontCamera));
 }
 
+class MyApp extends StatelessWidget {
+  final CameraDescription camera;
+
+  const MyApp({super.key, required this.camera}); // Correctly pass the camera
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = View.of(context).platformDispatcher.platformBrightness;
+
+    // Retrieves the default theme for the platform
+    //TextTheme textTheme = Theme.of(context).textTheme;
+
+    // Use with Google Fonts package to use downloadable fonts
+    TextTheme textTheme = createTextTheme(context, "Poppins", "Poppins");
+
+    MaterialTheme theme = MaterialTheme(textTheme);
+    return MaterialApp(
+      title: 'RPS App',
+      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+      initialRoute: WelcomeScreen.welcomeScreenRoute,
+      routes: {
+        WelcomeScreen.welcomeScreenRoute: (context) => const WelcomeScreen(),
+        RockPaperScissorsPlayerCamera.rpsPlayerCameraRoute: (context) =>
+            RockPaperScissorsPlayerCamera(camera: camera),
+      },
+    );
+  }
+}

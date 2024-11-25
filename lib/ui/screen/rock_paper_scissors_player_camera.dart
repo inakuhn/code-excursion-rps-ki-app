@@ -8,8 +8,9 @@ import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
 import 'package:python_ki_app/ui/molecule/rsp_top_bar.dart';
 import 'package:python_ki_app/ui/screen/display_picture_screen.dart';
 
-class TakePictureScreen extends StatefulWidget {
-  const TakePictureScreen({
+class RockPaperScissorsPlayerCamera extends StatefulWidget {
+  static const String rpsPlayerCameraRoute = "/rps_player_camera_route";
+  const RockPaperScissorsPlayerCamera({
     super.key,
     required this.camera,
   });
@@ -17,10 +18,10 @@ class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
 
   @override
-  TakePictureScreenState createState() => TakePictureScreenState();
+  RockPaperScissorsPlayerCameraState createState() => RockPaperScissorsPlayerCameraState();
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> {
+class RockPaperScissorsPlayerCameraState extends State<RockPaperScissorsPlayerCamera> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   late GestureClassificationHelper _gestureClassificationHelper;
