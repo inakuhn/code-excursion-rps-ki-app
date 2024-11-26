@@ -18,6 +18,7 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:python_ki_app/data/game_move.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'isolate_inference.dart';
 
@@ -51,21 +52,34 @@ class GestureClassificationHelper {
     _labels = labelTxt.split(',');
   }
 
-  // inference classification model in separate isolate
-  Future<Map<String, double>> _inference(InferenceModel inferenceModel) async {
+  Future<Map<GameMove, double>> _inference(
+      InferenceModel inferenceModel) async {
     ReceivePort responsePort = ReceivePort();
     _isolateInference.sendPort
         .send(inferenceModel..responsePort = responsePort.sendPort);
-    // get inference result.
+
+    // Await the result from the isolate
     var results = await responsePort.first;
-    return results;
+
+    // Assuming `results` is a Map<String, double>
+    if (results is Map) {
+      return results.map(
+        (key, value) => MapEntry<GameMove, double>(
+            stringToGameMove(key as String), value as double),
+      );
+    }
+
+    throw Exception(
+        "Unexpected data type received from isolate: ${results.runtimeType}");
+
   }
 
   // inference camera frame
-  Future<Map<String, double>> inferenceCameraFrame(
+  Future<Map<GameMove, double>> inferenceCameraFrame(
       CameraImage cameraImage) async {
     var isolateModel = InferenceModel(cameraImage, _interpreter.address,
         _labels, _inputTensor.shape, _outputTensor.shape);
+
     return _inference(isolateModel);
   }
 

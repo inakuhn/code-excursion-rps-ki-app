@@ -4,12 +4,18 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:python_ki_app/business/game/game_logic.dart';
 import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
-import 'package:python_ki_app/ui/molecule/rsp_top_bar.dart';
-import 'package:python_ki_app/ui/screen/display_picture_screen.dart';
+import 'package:python_ki_app/data/game_move.dart';
+import 'package:python_ki_app/ui/molecule/countdown_widget.dart';
+import 'package:python_ki_app/ui/molecule/rps_classification.dart';
+import 'package:python_ki_app/ui/molecule/rps_top_bar.dart';
+import 'package:python_ki_app/ui/screen/game_screen.dart';
 
 class RockPaperScissorsPlayerCamera extends StatefulWidget {
   static const String rpsPlayerCameraRoute = "/rps_player_camera_route";
+
   const RockPaperScissorsPlayerCamera({
     super.key,
     required this.camera,
@@ -18,14 +24,16 @@ class RockPaperScissorsPlayerCamera extends StatefulWidget {
   final CameraDescription camera;
 
   @override
-  RockPaperScissorsPlayerCameraState createState() => RockPaperScissorsPlayerCameraState();
+  RockPaperScissorsPlayerCameraState createState() =>
+      RockPaperScissorsPlayerCameraState();
 }
 
-class RockPaperScissorsPlayerCameraState extends State<RockPaperScissorsPlayerCamera> {
+class RockPaperScissorsPlayerCameraState
+    extends State<RockPaperScissorsPlayerCamera> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   late GestureClassificationHelper _gestureClassificationHelper;
-  Map<String, double>? _classification;
+  Map<GameMove, double>? _classification;
   bool _isProcessing = false;
 
   @override
@@ -106,8 +114,16 @@ class RockPaperScissorsPlayerCameraState extends State<RockPaperScissorsPlayerCa
 
   @override
   Widget build(BuildContext context) {
+    var primary = Theme.of(context).colorScheme.primary;
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: primary, // Change the navigation bar color
+        systemNavigationBarIconBrightness:
+            Brightness.light, // Brightness of icons
+      ),
+    );
     return Scaffold(
-      appBar: const RSPTopBar(title: "RPS App"),
+      appBar: const RPSTopBar(title: "RPS App"),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
@@ -125,36 +141,35 @@ class RockPaperScissorsPlayerCameraState extends State<RockPaperScissorsPlayerCa
                   child: cameraWidget(context),
                 ),
                 Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        if (_classification != null)
-                          ...(_classification!.entries.toList()
+                  alignment: Alignment.topRight,
+                  child: CountdownWidget(
+                    seconds: 5,
+                    onCountdownComplete: () async {
+                      var selectedClassification =
+                          (_classification!.entries.toList()
                                 ..sort(
                                   (a, b) => a.value.compareTo(b.value),
                                 ))
                               .reversed
-                              .take(3)
-                              .map(
-                                (e) => Container(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 8, 8, 38),
-                                  color: Colors.white,
-                                  child: Row(
-                                    children: [
-                                      Text(e.key),
-                                      const Spacer(),
-                                      Text(e.value.toStringAsFixed(2)),
-                                      const Spacer(),
-                                      const Spacer(),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                      ],
-                    ),
+                              .take(1)
+                              .first
+                              .key;
+                      await Navigator.of(context).popAndPushNamed(
+                          GameScreen.gameRoute,
+                          arguments: selectedClassification);
+                    },
                   ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SingleChildScrollView(
+                      child: Column(
+                    children: [
+                      RPSClassification(
+                        classification: _classification,
+                      ),
+                    ],
+                  )),
                 )
               ],
             ));
@@ -163,40 +178,6 @@ class RockPaperScissorsPlayerCameraState extends State<RockPaperScissorsPlayerCa
             return const Center(child: CircularProgressIndicator());
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        // Provide an onPressed callback.
-        onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
-
-            // Attempt to take a picture and get the file `image`
-            // where it was saved.
-            final image = await _controller.takePicture();
-
-            if (!context.mounted) return;
-
-            // If the picture was taken, display it on a new screen.
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(
-                  // Pass the automatically generated path to
-                  // the DisplayPictureScreen widget.
-                  imagePath: image.path,
-                ),
-              ),
-            );
-          } catch (e) {
-            // If an error occurs, log the error to the console.
-            if (kDebugMode) {
-              print(e);
-            }
-          }
-        },
-        child: const Icon(Icons.camera_alt),
       ),
     );
   }

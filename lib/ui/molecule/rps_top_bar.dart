@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class RSPTopBar extends StatelessWidget implements PreferredSizeWidget {
+class RPSTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
 
-  const RSPTopBar({
+  const RPSTopBar({
     super.key,
     required this.title,
     this.actions,
