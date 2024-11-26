@@ -1,4 +1,5 @@
 enum Players {
   computer,
-  player
+  player,
+  tie
 }
