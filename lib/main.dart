@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:python_ki_app/business/game/game_logic.dart';
 import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
 import 'package:python_ki_app/theme/theme.dart';
@@ -21,6 +22,8 @@ Future<void> main() async {
   final cameras = await availableCameras();
   final gameLogic = GameLogic();
   // Get a specific camera from the list of available cameras.
+  final GestureClassificationHelper gestureClassificationHelper =
+      GestureClassificationHelper(gameLogic: gameLogic);
   CameraDescription frontCamera =
       defaultTargetPlatform == TargetPlatform.macOS ||
               defaultTargetPlatform == TargetPlatform.windows
@@ -28,14 +31,23 @@ Future<void> main() async {
           : cameras.firstWhere(
               (camera) => camera.lensDirection == CameraLensDirection.front,
             );
-
-  runApp(MyApp(camera: frontCamera, gameLogic: gameLogic));
+  gestureClassificationHelper.init();
+  runApp(MyApp(
+      camera: frontCamera,
+      gameLogic: gameLogic,
+      gestureClassificationHelper: gestureClassificationHelper));
 }
 
 class MyApp extends StatelessWidget {
   final CameraDescription camera;
+  final GestureClassificationHelper gestureClassificationHelper;
+  final GameLogic gameLogic;
 
-  const MyApp({super.key, required this.camera, required GameLogic gameLogic}); // Correctly pass the camera
+  const MyApp(
+      {super.key,
+      required this.camera,
+      required this.gameLogic,
+      required this.gestureClassificationHelper}); // Correctly pass the camera
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +60,14 @@ class MyApp extends StatelessWidget {
     TextTheme textTheme = createTextTheme(context, "Poppins", "Poppins");
 
     MaterialTheme theme = MaterialTheme(textTheme);
+    var primary = theme.light().colorScheme.primary;
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: primary, // Change the navigation bar color
+        systemNavigationBarIconBrightness:
+            Brightness.light, // Brightness of icons
+      ),
+    );
     return MaterialApp(
       title: 'RPS App',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
@@ -55,9 +75,15 @@ class MyApp extends StatelessWidget {
       routes: {
         WelcomeScreen.welcomeScreenRoute: (context) => const WelcomeScreen(),
         RockPaperScissorsPlayerCamera.rpsPlayerCameraRoute: (context) =>
-            RockPaperScissorsPlayerCamera(camera: camera),
-        GameScreen.gameRoute: (context) => const GameScreen(),
-        WinnerScreen.winnerRoute : (context) => const WinnerScreen(),
+            RockPaperScissorsPlayerCamera(
+                camera: camera,
+                gestureClassificationHelper: gestureClassificationHelper),
+        GameScreen.gameRoute: (context) =>
+            GameScreen(gameSelection: gameLogic.gameSelection),
+        WinnerScreen.winnerRoute: (context) => WinnerScreen(
+              winnerName: gameLogic.winnerName(),
+              winnerGameMove: gameLogic.winnerGameMove(),
+            ),
       },
     );
   }

@@ -2,10 +2,8 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:python_ki_app/business/game/game_logic.dart';
 import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
 import 'package:python_ki_app/data/game_move.dart';
 import 'package:python_ki_app/ui/molecule/countdown_widget.dart';
@@ -19,9 +17,11 @@ class RockPaperScissorsPlayerCamera extends StatefulWidget {
   const RockPaperScissorsPlayerCamera({
     super.key,
     required this.camera,
+    required this.gestureClassificationHelper,
   });
 
   final CameraDescription camera;
+  final GestureClassificationHelper gestureClassificationHelper;
 
   @override
   RockPaperScissorsPlayerCameraState createState() =>
@@ -32,8 +32,7 @@ class RockPaperScissorsPlayerCameraState
     extends State<RockPaperScissorsPlayerCamera> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  late GestureClassificationHelper _gestureClassificationHelper;
-  Map<GameMove, double>? _classification;
+  Iterable<MapEntry<GameMove, double>>? _classification;
   bool _isProcessing = false;
 
   @override
@@ -44,8 +43,6 @@ class RockPaperScissorsPlayerCameraState
 
   void _initHelper() {
     _initCamera();
-    _gestureClassificationHelper = GestureClassificationHelper();
-    _gestureClassificationHelper.init();
   }
 
   void _initCamera() {
@@ -75,8 +72,8 @@ class RockPaperScissorsPlayerCameraState
       return;
     }
     _isProcessing = true;
-    _classification =
-        await _gestureClassificationHelper.inferenceCameraFrame(cameraImage);
+    _classification = await widget.gestureClassificationHelper
+        .inferenceCameraFrame(cameraImage);
     _isProcessing = false;
     if (mounted) {
       setState(() {});
@@ -114,14 +111,6 @@ class RockPaperScissorsPlayerCameraState
 
   @override
   Widget build(BuildContext context) {
-    var primary = Theme.of(context).colorScheme.primary;
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        systemNavigationBarColor: primary, // Change the navigation bar color
-        systemNavigationBarIconBrightness:
-            Brightness.light, // Brightness of icons
-      ),
-    );
     return Scaffold(
       appBar: const RPSTopBar(title: "RPS App"),
       // You must wait until the controller is initialized before displaying the
@@ -145,18 +134,8 @@ class RockPaperScissorsPlayerCameraState
                   child: CountdownWidget(
                     seconds: 5,
                     onCountdownComplete: () async {
-                      var selectedClassification =
-                          (_classification!.entries.toList()
-                                ..sort(
-                                  (a, b) => a.value.compareTo(b.value),
-                                ))
-                              .reversed
-                              .take(1)
-                              .first
-                              .key;
-                      await Navigator.of(context).popAndPushNamed(
-                          GameScreen.gameRoute,
-                          arguments: selectedClassification);
+                      await Navigator.of(context)
+                          .popAndPushNamed(GameScreen.gameRoute);
                     },
                   ),
                 ),

@@ -16,14 +16,6 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void dispose() {
-    var primary = Theme.of(context).colorScheme.primary;
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        systemNavigationBarColor: primary, // Change the navigation bar color
-        systemNavigationBarIconBrightness:
-        Brightness.light, // Brightness of icons
-      ),
-    );
     // Dispose
     super.dispose();
   }
@@ -34,13 +26,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         .of(context)
         .colorScheme
         .secondary;
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        systemNavigationBarColor: secondary, // Change the navigation bar color
-        systemNavigationBarIconBrightness: Brightness
-            .light, // Brightness of icons
-      ),
-    );
     return Scaffold(
       appBar: const RPSTopBar(
           title: "RPS App"
@@ -50,7 +35,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Lottie.asset('assets/lotties/rps_animation.json'),
-          OutlinedButton(onPressed: () async {
+          ElevatedButton(onPressed: () async {
             await Navigator.of(context).popAndPushNamed(
                 RockPaperScissorsPlayerCamera.rpsPlayerCameraRoute);
           }, child: const Text("Start Game"))

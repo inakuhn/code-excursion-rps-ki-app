@@ -2,10 +2,10 @@
 import 'package:python_ki_app/data/game_move.dart';
 
 class GameSelection {
-  GameMove userSelection;
+  GameMove? userSelection;
   GameMove computerSelection;
 
-  GameSelection({required this.userSelection, required this.computerSelection});
+  GameSelection({this.userSelection, required this.computerSelection});
 
   setUserSelection(GameMove userSelection) {
     this.userSelection = userSelection;
