@@ -5,11 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:python_ki_app/business/game/game_logic.dart';
+import 'package:python_ki_app/business/game/score_logic.dart';
 import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
+import 'package:python_ki_app/data/game_selection.dart';
+import 'package:python_ki_app/data/score.dart';
 import 'package:python_ki_app/theme/theme.dart';
 import 'package:python_ki_app/theme/util.dart';
 import 'package:python_ki_app/ui/screen/game_screen.dart';
 import 'package:python_ki_app/ui/screen/rock_paper_scissors_player_camera.dart';
+import 'package:python_ki_app/ui/screen/score_screen.dart';
 import 'package:python_ki_app/ui/screen/welcome_screen.dart';
 import 'package:python_ki_app/ui/screen/winner_screen.dart';
 
@@ -20,7 +24,11 @@ Future<void> main() async {
 
   // Obtain a list of the available cameras on the device.
   final cameras = await availableCameras();
-  final gameLogic = GameLogic();
+  final gameSelection = GameSelection();
+  final score = Score();
+  final scoreLogic = ScoreLogic(score: score);
+  final gameLogic =
+      GameLogic(gameSelection: gameSelection, scoreLogic: scoreLogic);
   // Get a specific camera from the list of available cameras.
   final GestureClassificationHelper gestureClassificationHelper =
       GestureClassificationHelper(gameLogic: gameLogic);
@@ -32,22 +40,29 @@ Future<void> main() async {
               (camera) => camera.lensDirection == CameraLensDirection.front,
             );
   gestureClassificationHelper.init();
-  runApp(MyApp(
+  runApp(
+    MyApp(
       camera: frontCamera,
       gameLogic: gameLogic,
-      gestureClassificationHelper: gestureClassificationHelper));
+      gestureClassificationHelper: gestureClassificationHelper,
+      scoreLogic: scoreLogic,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final CameraDescription camera;
   final GestureClassificationHelper gestureClassificationHelper;
   final GameLogic gameLogic;
+  final ScoreLogic scoreLogic;
 
-  const MyApp(
-      {super.key,
-      required this.camera,
-      required this.gameLogic,
-      required this.gestureClassificationHelper}); // Correctly pass the camera
+  const MyApp({
+    super.key,
+    required this.camera,
+    required this.gameLogic,
+    required this.gestureClassificationHelper,
+    required this.scoreLogic,
+  }); // Correctly pass the camera
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +99,7 @@ class MyApp extends StatelessWidget {
               winnerName: gameLogic.winnerName(),
               winnerGameMove: gameLogic.winnerGameMove(),
             ),
+        ScoreScreen.scoreRoute: (context) => ScoreScreen(scoreLogic: scoreLogic)
       },
     );
   }

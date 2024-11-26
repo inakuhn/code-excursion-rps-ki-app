@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-class CountdownWidget extends StatefulWidget {
+class RPSCountdownWidget extends StatefulWidget {
   final int seconds; // Duration of the countdown in seconds
   final VoidCallback onCountdownComplete; // Function to notify when done
 
-  const CountdownWidget({
+  const RPSCountdownWidget({
     super.key,
     required this.seconds,
     required this.onCountdownComplete,
   });
 
   @override
-  State<CountdownWidget> createState() => _CountdownWidgetState();
+  State<RPSCountdownWidget> createState() => _RPSCountdownWidgetState();
 }
 
-class _CountdownWidgetState extends State<CountdownWidget> {
+class _RPSCountdownWidgetState extends State<RPSCountdownWidget> {
   late int remainingSeconds;
   Timer? timer;
 

@@ -4,12 +4,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:python_ki_app/data/game_move.dart';
 
-class GameImage extends StatefulWidget {
+class RPSGameImage extends StatefulWidget {
   final GameMove choice;
   final bool shouldAnimate;
   final VoidCallback onAnimationComplete; // Function to notify when done
 
-  const GameImage({
+  const RPSGameImage({
     super.key,
     required this.choice,
     this.shouldAnimate = false,
@@ -19,10 +19,10 @@ class GameImage extends StatefulWidget {
   static void _emptyCallback() {}
 
   @override
-  State<GameImage> createState() => _GameImageState();
+  State<RPSGameImage> createState() => _RPSGameImageState();
 }
 
-class _GameImageState extends State<GameImage> {
+class _RPSGameImageState extends State<RPSGameImage> {
   final random = Random();
   static const List<GameMove> _choices = GameMove.values;
   GameMove? _currentImage;

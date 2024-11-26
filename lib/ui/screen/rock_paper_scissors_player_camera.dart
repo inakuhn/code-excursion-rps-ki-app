@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:python_ki_app/business/ki/gesture_classification_helper.dart';
 import 'package:python_ki_app/data/game_move.dart';
-import 'package:python_ki_app/ui/molecule/countdown_widget.dart';
+import 'package:python_ki_app/ui/molecule/rps_countdown_widget.dart';
 import 'package:python_ki_app/ui/molecule/rps_classification.dart';
 import 'package:python_ki_app/ui/molecule/rps_top_bar.dart';
 import 'package:python_ki_app/ui/screen/game_screen.dart';
@@ -131,7 +131,7 @@ class RockPaperScissorsPlayerCameraState
                 ),
                 Align(
                   alignment: Alignment.topRight,
-                  child: CountdownWidget(
+                  child: RPSCountdownWidget(
                     seconds: 5,
                     onCountdownComplete: () async {
                       await Navigator.of(context)

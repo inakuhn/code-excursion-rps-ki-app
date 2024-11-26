@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:python_ki_app/business/game/game_logic.dart';
 import 'package:python_ki_app/data/game_selection.dart';
-import 'package:python_ki_app/ui/atom/game_image.dart';
+import 'package:python_ki_app/ui/atom/rps_game_image.dart';
 import 'package:python_ki_app/ui/molecule/rps_top_bar.dart';
 import 'package:python_ki_app/ui/screen/winner_screen.dart';
 
@@ -27,13 +27,13 @@ class _GameScreenState extends State<GameScreen> {
           Expanded(
               child: Container(
                   color: Theme.of(context).colorScheme.secondary,
-                  child: GameImage(
+                  child: RPSGameImage(
                     choice: widget.gameSelection.userSelection!,
                   ))),
           Expanded(
               child: Container(
             color: Theme.of(context).colorScheme.primary,
-            child: GameImage(
+            child: RPSGameImage(
               choice: widget.gameSelection.computerSelection,
               shouldAnimate: true,
               onAnimationComplete: () async {

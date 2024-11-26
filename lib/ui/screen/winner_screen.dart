@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:python_ki_app/data/game_move.dart';
-import 'package:python_ki_app/ui/atom/game_image.dart';
+import 'package:python_ki_app/ui/atom/rps_game_image.dart';
+import 'package:python_ki_app/ui/atom/rps_navigation_button.dart';
+import 'package:python_ki_app/ui/atom/rps_text.dart';
+import 'package:python_ki_app/ui/screen/score_screen.dart';
 import 'package:python_ki_app/ui/screen/welcome_screen.dart';
 
 import '../molecule/rps_top_bar.dart';
@@ -28,26 +31,24 @@ class _WinnerScreenState extends State<WinnerScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Text(
-            widget.winnerName,
-            style: Theme.of(context)
-                .textTheme
-                .displayLarge
-                ?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+          RPSText(
+            text: widget.winnerName,
           ),
           Expanded(
-            child: GameImage(choice: widget.winnerGameMove),
+            child: RPSGameImage(choice: widget.winnerGameMove),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: OutlinedButton(
-                onPressed: () async {
-                  await Navigator.of(context).popAndPushNamed(
-                    WelcomeScreen.welcomeScreenRoute, // The new route to push
-                  );
-                },
-                child: const Text("Start Game")),
+          const RPSNavigationButton(
+            buttonText: "Start new Game",
+            routeName: WelcomeScreen.welcomeScreenRoute,
           ),
+          const RPSNavigationButton(
+            buttonText: "Score",
+            routeName: ScoreScreen.scoreRoute,
+          )
+
+          /// TODO 📄 Aufgabe 7
+          /// 🛠️ Füge einen RPSNavigationButton hinzu:
+          // 🎯 Verknüpfe die Route: Setze die Route des Buttons auf die ScoreScreen.scoreRoute mit dem passenden routeName.
         ],
       ),
       backgroundColor: secondary,
