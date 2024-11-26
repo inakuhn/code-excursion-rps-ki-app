@@ -7,7 +7,7 @@ import 'package:python_ki_app/data/game_move.dart';
 class RPSGameImage extends StatefulWidget {
   final GameMove choice;
   final bool shouldAnimate;
-  final VoidCallback onAnimationComplete; // Function to notify when done
+  final VoidCallback onAnimationComplete;
 
   const RPSGameImage({
     super.key,
@@ -22,15 +22,27 @@ class RPSGameImage extends StatefulWidget {
   State<RPSGameImage> createState() => _RPSGameImageState();
 }
 
-class _RPSGameImageState extends State<RPSGameImage> {
+class _RPSGameImageState extends State<RPSGameImage>
+    with SingleTickerProviderStateMixin {
   final random = Random();
   static const List<GameMove> _choices = GameMove.values;
   GameMove? _currentImage;
-  late Timer _timer;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  Timer? _randomImageTimer;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1), // Single zoom-in and out cycle
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
     if (widget.shouldAnimate) {
       _currentImage = _choices[random.nextInt(_choices.length)];
       _startRandomAnimation();
@@ -42,42 +54,62 @@ class _RPSGameImageState extends State<RPSGameImage> {
   void _startRandomAnimation() {
     int elapsedTime = 0;
 
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      setState(() {
-        // Randomly pick an image from the choices
-        _currentImage = _choices[random.nextInt(_choices.length)];
-      });
+    // Start random image change
+    _randomImageTimer =
+        Timer.periodic(const Duration(milliseconds: 200), (timer) {
+          setState(() {
+            _currentImage = _choices[random.nextInt(_choices.length)];
+          });
 
-      elapsedTime += 200;
-      if (elapsedTime >= 5000) {
-        timer.cancel();
-        _showFinalImage();
-      }
-    });
+          elapsedTime += 200;
+          if (elapsedTime >= 5000) {
+            timer.cancel();
+            _showFinalImage(); // Show the final image after random animation
+          }
+        });
   }
 
   void _showFinalImage() {
     setState(() {
       _currentImage = widget.choice;
-      widget.onAnimationComplete();
     });
+
+    // Start zoom animation only if shouldAnimate is true
+    if (widget.shouldAnimate) {
+      _controller.repeat(reverse: true);
+      Future.delayed(const Duration(seconds: 3), () {
+        _controller.stop();
+        widget.onAnimationComplete();
+      });
+    } else {
+      widget.onAnimationComplete();
+    }
   }
 
   @override
   void dispose() {
-    if (widget.shouldAnimate) {
-      _timer.cancel();
-    }
+    _controller.dispose();
+    _randomImageTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/${_currentImage?.name}.png',
-      width: double.infinity,
-      height: double.infinity,
-      fit: BoxFit.contain,
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: widget.shouldAnimate && _currentImage == widget.choice
+              ? _scaleAnimation.value // Apply zoom only if shouldAnimate is true
+              : 1.0,
+          child: Image.asset(
+            'assets/images/${_currentImage?.name}.png',
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.contain,
+          ),
+        );
+      },
     );
   }
 }
