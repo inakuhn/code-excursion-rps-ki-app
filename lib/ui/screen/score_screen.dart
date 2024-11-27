@@ -53,6 +53,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
           /// TODO 📄 Aufgabe 8.3 🎮 Navigation zu einem neuen Spiel:
           // 🔍 Tipp: Verwende RPSNavigationButton und setze die Route auf WelcomeScreen.welcomeScreenRoute.
+          const RPSNavigationButton(
+            buttonText: "Start new Game",
+            routeName: WelcomeScreen.welcomeScreenRoute,
+          ),
         ],
       ),
       backgroundColor: secondary,
