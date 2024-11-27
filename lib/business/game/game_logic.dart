@@ -23,10 +23,20 @@ class GameLogic {
         doesUserPapierSchlaegtComputerStein() ||
         doesUserSchereSchlaegtComputerPapier()) {
       return Players.player;
+    } else {
+      return Players.computer;
     }
-    return Players.computer;
   }
-
+  addPoint(){
+    switch(winner()){
+      case Players.computer:
+        scoreLogic.computerWins();
+      case Players.player:
+        scoreLogic.playerWins();
+      case Players.tie:
+        // do nothing
+    }
+  }
   bool doesUserSteinSchlaegtComputerSchere() {
     return gameSelection.userSelection == GameMove.rock &&
         gameSelection.computerSelection == GameMove.scissors;
@@ -48,6 +58,7 @@ class GameLogic {
   // 🤖 Wenn Computer gewinnt: Gib "Computer" zurück.
   // 🤝 Bei Unentschieden: Gib "Tie" zurück.
   String winnerName() {
+    addPoint();
     switch (winner()) {
       case Players.computer:
         return "Computer";
