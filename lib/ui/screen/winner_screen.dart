@@ -44,6 +44,10 @@ class _WinnerScreenState extends State<WinnerScreen> {
           /// TODO 📄 Aufgabe 7
           /// 🛠️ Füge einen RPSNavigationButton hinzu:
           // 🎯 Verknüpfe die Route: Setze die Route des Buttons auf die ScoreScreen.scoreRoute mit dem passenden routeName.
+          const RPSNavigationButton(
+            buttonText: "Score",
+            routeName: ScoreScreen.scoreRoute,
+          )
         ],
       ),
       backgroundColor: secondary,
