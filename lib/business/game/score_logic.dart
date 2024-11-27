@@ -12,7 +12,9 @@ class ScoreLogic {
   }
   /// TODO 📄 Aufgabe 5: computerWins()
   /// 🔹 Logik hinzufügen: Erhöhe computerScore in score.
-  computerWins() {}
+  computerWins() {
+    score.computerScore++;
+  }
 
 
   /// TODO 📄 Aufgabe 6: resetScores()
