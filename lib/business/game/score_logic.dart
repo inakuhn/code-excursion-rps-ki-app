@@ -10,16 +10,17 @@ class ScoreLogic {
   playerWins() {
     score.playerScore++;
   }
+
   /// TODO 📄 Aufgabe 5: computerWins()
   /// 🔹 Logik hinzufügen: Erhöhe computerScore in score.
   computerWins() {
     score.computerScore++;
   }
 
-
   /// TODO 📄 Aufgabe 6: resetScores()
   // 🔹 Logik hinzufügen: Setze beide Punktestände (playerScore und computerScore) auf 0.
   resetScores() {
-
+    score.computerScore = 0;
+    score.playerScore = 0;
   }
 }
