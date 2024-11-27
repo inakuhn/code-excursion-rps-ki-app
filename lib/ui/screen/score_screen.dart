@@ -41,6 +41,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
           /// TODO 📄 Aufgabe 8.2 Füge RPSText hinzu, um den Punktestand des des Computers darzustellen.
           /// widget.scoreLogic.score.computerScore
+          RPSText(
+            text: "Computer: ${widget.scoreLogic.score.computerScore}",
+          ),
           ElevatedButton(
             onPressed: () {
               resetScores();
