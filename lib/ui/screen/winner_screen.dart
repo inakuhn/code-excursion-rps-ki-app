@@ -41,11 +41,6 @@ class _WinnerScreenState extends State<WinnerScreen> {
             buttonText: "Start new Game",
             routeName: WelcomeScreen.welcomeScreenRoute,
           ),
-          const RPSNavigationButton(
-            buttonText: "Score",
-            routeName: ScoreScreen.scoreRoute,
-          )
-
           /// TODO 📄 Aufgabe 7
           /// 🛠️ Füge einen RPSNavigationButton hinzu:
           // 🎯 Verknüpfe die Route: Setze die Route des Buttons auf die ScoreScreen.scoreRoute mit dem passenden routeName.
