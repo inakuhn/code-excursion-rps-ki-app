@@ -64,7 +64,14 @@ class GameLogic {
   // 🖥️ Wenn winner() Players.computer zurückgibt: Gib gameSelection.computerSelection zurück.
   // 🤝 Bei Unentschieden: Gib einen der Spielzüge zurück (z. B. gameSelection.userSelection).
   GameMove winnerGameMove() {
-    return gameSelection.computerSelection;
+    switch (winner()) {
+      case Players.computer:
+        return gameSelection.computerSelection;
+      case Players.player:
+        return gameSelection.userSelection!;
+      case Players.tie:
+        return gameSelection.computerSelection;
+    }
   }
 
   /// 📥 userSelection(): Speichert die Auswahl des Spielers.
