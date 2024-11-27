@@ -48,7 +48,14 @@ class GameLogic {
   // 🤖 Wenn Computer gewinnt: Gib "Computer" zurück.
   // 🤝 Bei Unentschieden: Gib "Tie" zurück.
   String winnerName() {
-    return winner().name;
+    switch (winner()) {
+      case Players.computer:
+        return "Computer";
+      case Players.player:
+        return "Player";
+      case Players.tie:
+        return "Tie";
+    }
   }
 
   /// TODO 📄 Aufgabe 3: 🎲 winnerGameMove()
