@@ -17,7 +17,29 @@ class GameLogic {
   // 🤝 Unentschieden: Wenn die Spielzüge gleich sind, gib Players.tie zurück.
   // 🏅 Gib Players.player, Players.computer oder Players.tie zurück.
   Players winner() {
+    if (gameSelection.computerSelection == gameSelection.userSelection) {
+      return Players.tie;
+    } else if (doesUserSteinSchlaegtComputerSchere() ||
+        doesUserPapierSchlaegtComputerStein() ||
+        doesUserSchereSchlaegtComputerPapier()) {
+      return Players.player;
+    }
     return Players.computer;
+  }
+
+  bool doesUserSteinSchlaegtComputerSchere() {
+    return gameSelection.userSelection == GameMove.rock &&
+        gameSelection.computerSelection == GameMove.scissors;
+  }
+
+  bool doesUserPapierSchlaegtComputerStein() {
+    return gameSelection.userSelection == GameMove.paper &&
+        gameSelection.computerSelection == GameMove.rock;
+  }
+
+  bool doesUserSchereSchlaegtComputerPapier() {
+    return gameSelection.userSelection == GameMove.scissors &&
+        gameSelection.computerSelection == GameMove.paper;
   }
 
   /// TODO 📄 Aufgabe 2: 📛 winnerName()
@@ -43,5 +65,4 @@ class GameLogic {
     gameSelection
         .setUserSelection(gameMove); //Speichert die Auswahl des Spielers.
   }
-
 }
