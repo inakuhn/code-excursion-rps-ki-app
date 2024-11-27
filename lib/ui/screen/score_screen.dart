@@ -35,19 +35,21 @@ class _ScoreScreenState extends State<ScoreScreen> {
         children: [
           /// TODO 📄 Aufgabe 8.1 Füge RPSText hinzu, um den Punktestand des Spielers darzustellen.
           /// 🔍 Tipp: Nutze widget.scoreLogic.score.playerScore
+          RPSText(
+            text: "Player: ${widget.scoreLogic.score.playerScore}",
+          ),
 
           /// TODO 📄 Aufgabe 8.2 Füge RPSText hinzu, um den Punktestand des des Computers darzustellen.
           /// widget.scoreLogic.score.computerScore
-
           ElevatedButton(
             onPressed: () {
               resetScores();
             },
             child: const Text("Reset Scores"),
           ),
+
           /// TODO 📄 Aufgabe 8.3 🎮 Navigation zu einem neuen Spiel:
           // 🔍 Tipp: Verwende RPSNavigationButton und setze die Route auf WelcomeScreen.welcomeScreenRoute.
-
         ],
       ),
       backgroundColor: secondary,
