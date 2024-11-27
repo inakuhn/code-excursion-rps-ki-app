@@ -35,7 +35,7 @@ class _GameScreenState extends State<GameScreen> {
             color: Theme.of(context).colorScheme.primary,
             child: RPSGameImage(
               choice: widget.gameSelection.computerSelection,
-              shouldAnimate: true,
+              shouldRandomAnimate: true,
               onAnimationComplete: () async {
                 await Navigator.of(context).popAndPushNamed(
                   WinnerScreen.winnerRoute, // The new route to push

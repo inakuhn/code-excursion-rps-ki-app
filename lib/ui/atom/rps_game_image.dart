@@ -6,13 +6,15 @@ import 'package:python_ki_app/data/game_move.dart';
 
 class RPSGameImage extends StatefulWidget {
   final GameMove choice;
-  final bool shouldAnimate;
+  final bool shouldRandomAnimate;
+  final bool shouldAnimateAtTheEnd;
   final VoidCallback onAnimationComplete;
 
   const RPSGameImage({
     super.key,
     required this.choice,
-    this.shouldAnimate = false,
+    this.shouldRandomAnimate = false,
+    this.shouldAnimateAtTheEnd = false,
     this.onAnimationComplete = _emptyCallback,
   });
 
@@ -43,7 +45,7 @@ class _RPSGameImageState extends State<RPSGameImage>
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    if (widget.shouldAnimate) {
+    if (widget.shouldRandomAnimate) {
       _currentImage = _choices[random.nextInt(_choices.length)];
       _startRandomAnimation();
     } else {
@@ -57,16 +59,16 @@ class _RPSGameImageState extends State<RPSGameImage>
     // Start random image change
     _randomImageTimer =
         Timer.periodic(const Duration(milliseconds: 200), (timer) {
-          setState(() {
-            _currentImage = _choices[random.nextInt(_choices.length)];
-          });
+      setState(() {
+        _currentImage = _choices[random.nextInt(_choices.length)];
+      });
 
-          elapsedTime += 200;
-          if (elapsedTime >= 5000) {
-            timer.cancel();
-            _showFinalImage(); // Show the final image after random animation
-          }
-        });
+      elapsedTime += 200;
+      if (elapsedTime >= 5000) {
+        timer.cancel();
+        _showFinalImage(); // Show the final image after random animation
+      }
+    });
   }
 
   void _showFinalImage() {
@@ -75,14 +77,16 @@ class _RPSGameImageState extends State<RPSGameImage>
     });
 
     // Start zoom animation only if shouldAnimate is true
-    if (widget.shouldAnimate) {
+    if (widget.shouldAnimateAtTheEnd) {
       _controller.repeat(reverse: true);
       Future.delayed(const Duration(seconds: 3), () {
         _controller.stop();
         widget.onAnimationComplete();
       });
     } else {
-      widget.onAnimationComplete();
+      Future.delayed(const Duration(seconds: 3), () {
+        widget.onAnimationComplete();
+      });
     }
   }
 
@@ -99,8 +103,9 @@ class _RPSGameImageState extends State<RPSGameImage>
       animation: _scaleAnimation,
       builder: (context, child) {
         return Transform.scale(
-          scale: widget.shouldAnimate && _currentImage == widget.choice
-              ? _scaleAnimation.value // Apply zoom only if shouldAnimate is true
+          scale: widget.shouldAnimateAtTheEnd && _currentImage == widget.choice
+              ? _scaleAnimation
+                  .value // Apply zoom only if shouldAnimate is true
               : 1.0,
           child: Image.asset(
             'assets/images/${_currentImage?.name}.png',
