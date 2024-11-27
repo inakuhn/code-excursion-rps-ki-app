@@ -8,7 +8,7 @@ class ScoreLogic {
   /// TODO 📄 Aufgabe 4: playerWins()
   /// 🔹 Logik hinzufügen: Erhöhe playerScore in score.
   playerWins() {
-
+    score.playerScore++;
   }
   /// TODO 📄 Aufgabe 5: computerWins()
   /// 🔹 Logik hinzufügen: Erhöhe computerScore in score.
